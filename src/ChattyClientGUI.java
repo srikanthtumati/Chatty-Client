@@ -46,8 +46,6 @@ public class ChattyClientGUI extends Application{
 
     public TextArea buildChat(){
         TextArea console = new TextArea();
-        //console.setPrefSize(600, 300);
-        //console.setStyle("-fx-background-color: white;");
         console.setWrapText(false);
         console.setEditable(false);
         return console;
@@ -57,10 +55,11 @@ public class ChattyClientGUI extends Application{
         ((TextField)((GridPane) borderPane.getLeft()).getChildren().get(1)).setEditable(false);
         ((TextField)((GridPane) borderPane.getLeft()).getChildren().get(3)).setEditable(false);
         try {
-            ChattyClient client = new ChattyClient(((TextField) ((GridPane) borderPane.getLeft()).getChildren().get(1)).getText(), ((TextField) ((GridPane) borderPane.getLeft()).getChildren().get(3)).getText(), ((TextArea) borderPane.getCenter()));
+            ChattyClient client = new ChattyClient(((TextField) ((GridPane) borderPane.getLeft()).getChildren().get(1)).getText(), ((TextField) ((GridPane) borderPane.getLeft()).getChildren().get(3)).getText(), borderPane);
             Platform.runLater(new Runnable() {
                 @Override
                 public void run() {
+                    ((Label)borderPane.getTop()).setText("Connected!");
                     TextField userinput = new TextField();
                     userinput.setOnAction(event -> client.transfer(userinput));
                     borderPane.setBottom(userinput);
