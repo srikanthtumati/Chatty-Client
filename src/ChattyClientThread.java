@@ -1,5 +1,7 @@
 import javafx.application.Platform;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
+import javafx.scene.layout.BorderPane;
 
 import java.io.*;
 import java.net.Socket;
@@ -9,8 +11,10 @@ public class ChattyClientThread implements Runnable{
     private Socket client;
     private BufferedReader in;
     private TextArea console;
-    public ChattyClientThread(Socket client, TextArea console){
-        this.console=console;
+    private BorderPane gui;
+    public ChattyClientThread(Socket client, BorderPane gui){
+        this.console=((TextArea)gui.getCenter());
+        this.gui=gui;
         try {
             this.client=client;
             this.in = new BufferedReader(new InputStreamReader(client.getInputStream()));
@@ -26,7 +30,7 @@ public class ChattyClientThread implements Runnable{
         while (true){
             try {
                 String serverResponse = this.in.readLine();
-                if (serverResponse!=null)
+                if (serverResponse!=null) {
                     Platform.runLater(new Runnable() {
                         @Override
                         public void run() {
@@ -34,10 +38,20 @@ public class ChattyClientThread implements Runnable{
 
                         }
                     });
+                    String[] parsedResponse = serverResponse.split(" ");
+                    if (parsedResponse[0].equals("Server:") && parsedResponse[1].equals("Disconnected"))
+                        break;
+                }
             }
             catch(IOException ex){
                 ex.printStackTrace();
             }
         }
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                ((Label)gui.getTop()).setText("Disconnected!");
+            }
+        });
     }
 }

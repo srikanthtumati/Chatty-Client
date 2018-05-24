@@ -15,7 +15,7 @@ public class ChattyClient {
     public ChattyClient(String host, String port, BorderPane gui) throws IOException{
             this.gui=gui;
             this.client = new Socket(host, Integer.parseInt(port));
-            Thread chattyClientThread = new Thread(new ChattyClientThread(this.client, ((TextArea)gui.getCenter())));
+            Thread chattyClientThread = new Thread(new ChattyClientThread(this.client, gui));
             chattyClientThread.start();
             this.out = new BufferedWriter(new OutputStreamWriter(client.getOutputStream()));
 
