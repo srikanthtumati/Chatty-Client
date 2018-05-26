@@ -5,6 +5,7 @@ import javafx.scene.layout.BorderPane;
 
 import java.io.*;
 import java.net.Socket;
+import java.net.SocketException;
 import java.net.UnknownHostException;
 
 public class ChattyClientThread implements Runnable{
@@ -15,8 +16,8 @@ public class ChattyClientThread implements Runnable{
     public ChattyClientThread(Socket client, BorderPane gui){
         this.console=((TextArea)gui.getCenter());
         this.gui=gui;
+        this.client=client;
         try {
-            this.client=client;
             this.in = new BufferedReader(new InputStreamReader(client.getInputStream()));
         }
         catch (UnknownHostException ex){
@@ -39,19 +40,34 @@ public class ChattyClientThread implements Runnable{
                         }
                     });
                     String[] parsedResponse = serverResponse.split(" ");
-                    if (parsedResponse[0].equals("Server:") && parsedResponse[1].equals("Disconnected"))
+                    if (parsedResponse[0].equals("Server:") && parsedResponse[1].equals("Disconnected")) {
+                        System.out.println("hi");
+                        try {
+                            this.in.close();
+                        }
+                        catch (IOException ex){
+                            ex.printStackTrace();
+                        }
                         break;
+                    }
                 }
+                else{
+                    throw new SocketException();
+                }
+            }
+            catch (SocketException ex){
+                Platform.runLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        ((Label)gui.getTop()).setText("Disconnected!");
+                    }
+                });
+                break;
             }
             catch(IOException ex){
                 ex.printStackTrace();
+                break;
             }
         }
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                ((Label)gui.getTop()).setText("Disconnected!");
-            }
-        });
     }
 }

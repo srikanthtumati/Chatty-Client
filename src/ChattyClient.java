@@ -1,5 +1,4 @@
 import javafx.scene.control.Label;
-import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import java.io.*;
@@ -17,13 +16,12 @@ public class ChattyClient {
             this.client = new Socket(host, Integer.parseInt(port));
             Thread chattyClientThread = new Thread(new ChattyClientThread(this.client, gui));
             chattyClientThread.start();
-            this.out = new BufferedWriter(new OutputStreamWriter(client.getOutputStream()));
-
     }
 
     public void transfer(TextField userinput){
-        this.in  = new BufferedReader(new StringReader(userinput.getText()));
-            try {
+        try {
+            this.in  = new BufferedReader(new StringReader(userinput.getText()));
+            this.out = new BufferedWriter(new OutputStreamWriter(client.getOutputStream()));
                 String command = in.readLine();
                 if (command != null) {
                     out.write(command + "\n");
